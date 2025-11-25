@@ -22,66 +22,67 @@ class AppTheme {
         foregroundColor: AppConstants.textOnPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.poppins(
+        titleTextStyle: GoogleFonts.nunito(
           color: AppConstants.textOnPrimary,
           fontSize: AppConstants.fontSizeLarge,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
         ),
       ),
       
-      // Text Theme
-      textTheme: GoogleFonts.poppinsTextTheme().copyWith(
-        displayLarge: GoogleFonts.poppins(
+      // Text Theme - More playful with Nunito
+      textTheme: GoogleFonts.nunitoTextTheme().copyWith(
+        displayLarge: GoogleFonts.nunito(
           fontSize: AppConstants.fontSizeXXLarge,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: AppConstants.textPrimary,
         ),
-        displayMedium: GoogleFonts.poppins(
+        displayMedium: GoogleFonts.nunito(
           fontSize: AppConstants.fontSizeXLarge,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: AppConstants.textPrimary,
         ),
-        headlineLarge: GoogleFonts.poppins(
+        headlineLarge: GoogleFonts.nunito(
           fontSize: AppConstants.fontSizeXLarge,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppConstants.textPrimary,
         ),
-        headlineMedium: GoogleFonts.poppins(
+        headlineMedium: GoogleFonts.nunito(
           fontSize: AppConstants.fontSizeLarge,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppConstants.textPrimary,
         ),
-        bodyLarge: GoogleFonts.poppins(
+        bodyLarge: GoogleFonts.nunito(
           fontSize: AppConstants.fontSizeMedium,
           color: AppConstants.textPrimary,
         ),
-        bodyMedium: GoogleFonts.poppins(
+        bodyMedium: GoogleFonts.nunito(
           fontSize: AppConstants.fontSizeMedium,
           color: AppConstants.textSecondary,
         ),
-        labelLarge: GoogleFonts.poppins(
+        labelLarge: GoogleFonts.nunito(
           fontSize: AppConstants.fontSizeMedium,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppConstants.textOnPrimary,
         ),
       ),
       
-      // Elevated Button Theme
+      // Elevated Button Theme - More rounded and playful
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppConstants.primaryColor,
           foregroundColor: AppConstants.textOnPrimary,
-          elevation: 2,
+          elevation: 3,
+          shadowColor: AppConstants.primaryColor.withOpacity(0.3),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+            borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
           ),
           padding: const EdgeInsets.symmetric(
-            horizontal: AppConstants.spacingLarge,
+            horizontal: AppConstants.spacingXLarge,
             vertical: AppConstants.spacingMedium,
           ),
-          textStyle: GoogleFonts.poppins(
+          textStyle: GoogleFonts.nunito(
             fontSize: AppConstants.fontSizeMedium,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -90,17 +91,17 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppConstants.primaryColor,
-          side: const BorderSide(color: AppConstants.primaryColor, width: 2),
+          side: const BorderSide(color: AppConstants.primaryColor, width: 3),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+            borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
           ),
           padding: const EdgeInsets.symmetric(
-            horizontal: AppConstants.spacingLarge,
+            horizontal: AppConstants.spacingXLarge,
             vertical: AppConstants.spacingMedium,
           ),
-          textStyle: GoogleFonts.poppins(
+          textStyle: GoogleFonts.nunito(
             fontSize: AppConstants.fontSizeMedium,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -116,62 +117,66 @@ class AppTheme {
             horizontal: AppConstants.spacingMedium,
             vertical: AppConstants.spacingSmall,
           ),
-          textStyle: GoogleFonts.poppins(
+          textStyle: GoogleFonts.nunito(
             fontSize: AppConstants.fontSizeMedium,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
       
-      // Input Decoration Theme
+      // Input Decoration Theme - More playful
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppConstants.surfaceColor,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
-          borderSide: const BorderSide(color: AppConstants.textSecondary),
+          borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+          borderSide: BorderSide(color: AppConstants.textSecondary.withOpacity(0.3)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
-          borderSide: const BorderSide(color: AppConstants.textSecondary),
+          borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+          borderSide: BorderSide(color: AppConstants.textSecondary.withOpacity(0.3)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
-          borderSide: const BorderSide(color: AppConstants.primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+          borderSide: const BorderSide(color: AppConstants.primaryColor, width: 3),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
-          borderSide: const BorderSide(color: AppConstants.errorColor),
+          borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+          borderSide: const BorderSide(color: AppConstants.errorColor, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppConstants.spacingMedium,
+          horizontal: AppConstants.spacingLarge,
           vertical: AppConstants.spacingMedium,
         ),
-        hintStyle: GoogleFonts.poppins(
+        hintStyle: GoogleFonts.nunito(
           color: AppConstants.textSecondary,
           fontSize: AppConstants.fontSizeMedium,
+          fontWeight: FontWeight.w500,
         ),
-        labelStyle: GoogleFonts.poppins(
+        labelStyle: GoogleFonts.nunito(
           color: AppConstants.textSecondary,
           fontSize: AppConstants.fontSizeMedium,
+          fontWeight: FontWeight.w600,
         ),
       ),
       
-      // Card Theme
+      // Card Theme - More rounded and colorful
       cardTheme: CardThemeData(
         color: AppConstants.surfaceColor,
-        elevation: 2,
+        elevation: 4,
+        shadowColor: Colors.black.withOpacity(0.1),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+          borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
         ),
         margin: const EdgeInsets.all(AppConstants.spacingSmall),
       ),
       
       // Floating Action Button Theme
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppConstants.secondaryColor,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: AppConstants.accentColor,
         foregroundColor: AppConstants.textOnPrimary,
-        elevation: 4,
+        elevation: 6,
+        shape: const CircleBorder(),
       ),
     );
   }

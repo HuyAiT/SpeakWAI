@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import '../utils/app_constants.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../services/api_service.dart';
+import '../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -36,16 +38,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _isLoading = true;
       });
 
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      try {
+        final response = await ApiService.register(
+          _nameController.text.trim(),
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
 
-      // TODO: Implement actual registration logic
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        // Navigate to home screen on successful registration
-        context.go('/home');
+        if (response['message'] == 'User registered successfully') {
+          // Save token and user data
+          await AuthService.saveToken(response['token']);
+          await AuthService.saveUser(response['user']);
+
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+            // Navigate to home screen on successful registration
+            context.go('/home');
+          }
+        } else {
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(response['error'] ?? 'Registration failed'),
+                backgroundColor: AppConstants.errorColor,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Registration error: $e'),
+              backgroundColor: AppConstants.errorColor,
+            ),
+          );
+        }
       }
     }
   }

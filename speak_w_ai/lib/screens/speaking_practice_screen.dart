@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_constants.dart';
 import '../widgets/custom_button.dart';
 
@@ -97,28 +98,46 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                     GestureDetector(
                       onTap: _isProcessing ? null : _toggleRecording,
                       child: Container(
-                        width: 120,
-                        height: 120,
+                        width: 140,
+                        height: 140,
                         decoration: BoxDecoration(
-                          color: _isRecording ? AppConstants.errorColor : AppConstants.primaryColor,
+                          gradient: _isRecording
+                              ? AppConstants.warmGradient
+                              : AppConstants.funGradient,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: (_isRecording ? AppConstants.errorColor : AppConstants.primaryColor).withOpacity(0.3),
-                              blurRadius: 20,
-                              spreadRadius: 5,
+                              color: (_isRecording ? AppConstants.pinkColor : AppConstants.blueColor).withOpacity(0.4),
+                              blurRadius: 25,
+                              spreadRadius: 8,
                             ),
                           ],
                         ),
                         child: _isProcessing
                             ? const CircularProgressIndicator(
                                 color: AppConstants.textOnPrimary,
-                                strokeWidth: 3,
+                                strokeWidth: 4,
                               )
-                            : Icon(
-                                _isRecording ? Icons.stop : Icons.mic,
-                                size: 50,
-                                color: AppConstants.textOnPrimary,
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    _isRecording ? Icons.stop : Icons.mic,
+                                    size: 60,
+                                    color: AppConstants.textOnPrimary,
+                                  ),
+                                  if (_isRecording) ...[
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'ĐANG GHI ÂM',
+                                      style: GoogleFonts.nunito(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
                       ),
                     ),
@@ -126,11 +145,77 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                     const SizedBox(height: AppConstants.spacingLarge),
                     
                     // Recording Status
-                    Text(
-                      _isRecording ? 'Đang ghi âm...' : _isProcessing ? 'Đang xử lý...' : 'Nhấn để bắt đầu ghi âm',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: _isRecording ? AppConstants.errorColor : AppConstants.textSecondary,
-                        fontWeight: FontWeight.w500,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppConstants.spacingLarge,
+                        vertical: AppConstants.spacingMedium,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _isRecording
+                            ? AppConstants.pinkColor.withOpacity(0.1)
+                            : _isProcessing
+                                ? AppConstants.blueColor.withOpacity(0.1)
+                                : AppConstants.backgroundColor,
+                        borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+                        border: Border.all(
+                          color: _isRecording
+                              ? AppConstants.pinkColor
+                              : _isProcessing
+                                  ? AppConstants.blueColor
+                                  : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_isRecording) ...[
+                            Container(
+                              width: 12,
+                              height: 12,
+                              decoration: const BoxDecoration(
+                                color: AppConstants.pinkColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: AppConstants.spacingSmall),
+                            Text(
+                              '🎙️ Đang ghi âm...',
+                              style: GoogleFonts.nunito(
+                                fontSize: AppConstants.fontSizeLarge,
+                                fontWeight: FontWeight.w800,
+                                color: AppConstants.pinkColor,
+                              ),
+                            ),
+                          ] else if (_isProcessing) ...[
+                            const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                                valueColor: AlwaysStoppedAnimation<Color>(AppConstants.blueColor),
+                              ),
+                            ),
+                            const SizedBox(width: AppConstants.spacingSmall),
+                            Text(
+                              '⚡ Đang xử lý...',
+                              style: GoogleFonts.nunito(
+                                fontSize: AppConstants.fontSizeLarge,
+                                fontWeight: FontWeight.w800,
+                                color: AppConstants.blueColor,
+                              ),
+                            ),
+                          ] else ...[
+                            Text(
+                              '🎯 Nhấn để bắt đầu ghi âm',
+                              style: GoogleFonts.nunito(
+                                fontSize: AppConstants.fontSizeLarge,
+                                fontWeight: FontWeight.w600,
+                                color: AppConstants.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                     

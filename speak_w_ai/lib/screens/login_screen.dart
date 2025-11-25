@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_constants.dart';
 import '../widgets/custom_text_field.dart';
-import '../widgets/custom_button.dart';
+import '../services/api_service.dart';
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,16 +33,49 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = true;
       });
 
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      try {
+        final response = await ApiService.login(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
 
-      // TODO: Implement actual login logic
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        // Navigate to home screen on successful login
-        context.go('/home');
+        if (response['message'] == 'Login successful') {
+          // Save token and user data
+          await AuthService.saveToken(response['token']);
+          await AuthService.saveUser(response['user']);
+
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+            // Navigate to home screen on successful login
+            context.go('/home');
+          }
+        } else {
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(response['error'] ?? 'Login failed'),
+                backgroundColor: AppConstants.errorColor,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Login error: $e'),
+              backgroundColor: AppConstants.errorColor,
+            ),
+          );
+        }
       }
     }
   }
@@ -61,28 +96,47 @@ class _LoginScreenState extends State<LoginScreen> {
                   Column(
                     children: [
                       Container(
-                        width: 100,
-                        height: 100,
+                        width: 120,
+                        height: 120,
                         decoration: BoxDecoration(
-                          gradient: AppConstants.primaryGradient,
-                          borderRadius: BorderRadius.circular(50),
+                          gradient: AppConstants.funGradient,
+                          borderRadius: BorderRadius.circular(60),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppConstants.secondaryColor.withOpacity(0.3),
+                              blurRadius: 20,
+                              spreadRadius: 5,
+                            ),
+                          ],
                         ),
                         child: const Icon(
-                          Icons.record_voice_over,
-                          size: 50,
+                          Icons.school,
+                          size: 60,
                           color: AppConstants.textOnPrimary,
                         ),
                       ),
-                      const SizedBox(height: AppConstants.spacingMedium),
+                      const SizedBox(height: AppConstants.spacingLarge),
                       Text(
                         AppConstants.appName,
-                        style: Theme.of(context).textTheme.displayMedium,
+                        style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                          color: AppConstants.primaryColor,
+                        ),
                       ),
-                      const SizedBox(height: AppConstants.spacingSmall),
-                      Text(
-                        'Hãy bắt đầu hành trình học tiếng Anh của bạn',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        textAlign: TextAlign.center,
+                      const SizedBox(height: AppConstants.spacingMedium),
+                      Container(
+                        padding: const EdgeInsets.all(AppConstants.spacingMedium),
+                        decoration: BoxDecoration(
+                          color: AppConstants.lightGreenColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+                        ),
+                        child: Text(
+                          '🎯 Học tiếng Anh vui nhộn mỗi ngày!',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: AppConstants.darkGreenColor,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ],
                   ),
@@ -162,10 +216,61 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: AppConstants.spacingLarge),
 
                         // Login Button
-                        CustomButton(
-                          text: 'Đăng nhập',
-                          onPressed: _login,
-                          isLoading: _isLoading,
+                        Container(
+                          width: double.infinity,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: AppConstants.warmGradient,
+                            borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppConstants.accentColor.withOpacity(0.3),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _login,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+                              ),
+                            ),
+                            child: _isLoading
+                                ? const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 3,
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        ),
+                                      ),
+                                      SizedBox(width: AppConstants.spacingSmall),
+                                      Text('Đang đăng nhập...'),
+                                    ],
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text('🚀'),
+                                      const SizedBox(width: AppConstants.spacingSmall),
+                                      Text(
+                                        'Đăng nhập',
+                                        style: GoogleFonts.nunito(
+                                          fontSize: AppConstants.fontSizeMedium,
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
                         ),
 
                         const SizedBox(height: AppConstants.spacingMedium),
