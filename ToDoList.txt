@@ -1,0 +1,44 @@
+### **Phần A: Frontend (Flutter)**
+
+**Mục tiêu:** Hoàn thiện việc cài đặt môi trường và xây dựng các màn hình giao diện chính của ứng dụng.
+
+1. **Thiết lập Môi trường Phát triển:**
+    - [ ]  Cài đặt **Flutter SDK**.
+    - [ ]  Cài đặt và cấu trình soạn thảo code (VS Code hoặc Android Studio).
+    - [ ]  Cài đặt trình giả lập (Android Emulator/AVD) hoặc kết nối điện thoại thật để chạy thử.
+    - [ ]  Chạy lệnh **`flutter doctor`** để đảm bảo mọi thứ đã được cài đặt đúng cách.
+2. **Khởi tạo Project và Cấu trúc:**
+    - [ ]  Tạo project Flutter mới: **`flutter create ten_project_cua_ban`**.
+    - [ ]  Tạo cấu trúc thư mục hợp lý (ví dụ: **`lib/screens`**, **`lib/widgets`**, **`lib/services`**, **`lib/models`**).
+3. **Xây dựng Giao diện (UI) cơ bản:**
+    - [ ]  Thiết kế và xây dựng màn hình **Đăng nhập / Đăng ký** (**`login_screen.dart`**, **`register_screen.dart`**).
+    - [ ]  Thiết kế và xây dựng màn hình **Trang chủ** (**`home_screen.dart`**), hiển thị các chức năng chính (Luyện nói, Luyện từ vựng...).
+    - [ ]  Thiết kế và xây dựng màn hình **Luyện nói** (**`speaking_practice_screen.dart`**) với giao diện đơn giản (chỗ hiển thị câu, nút ghi âm).
+    - [ ]  Áp dụng một theme chung cho ứng dụng (màu sắc, font chữ).
+4. **Thiết lập Điều hướng (Navigation):**
+    - [ ]  Sử dụng **`Navigator`** hoặc thư viện **`go_router`** để điều hướng giữa các màn hình (ví dụ: từ Đăng nhập -> Trang chủ).
+
+---
+
+### **Phần B: Backend + Database**
+
+**Mục tiêu:** Có một máy chủ backend cơ bản có thể kết nối với MySQL và cung cấp các API đầu tiên cho ứng dụng Flutter.
+
+- Lưu ý: Bạn cần chọn một ngôn ngữ cho backend. Gợi ý phổ biến và hiệu quả nhất với Flutter là **Node.js (Express)** hoặc **Python (Flask/FastAPI)**. Dưới đây là các bước chung, bạn có thể áp dụng với ngôn ngữ mình chọn.*
+1. **Thiết lập Môi trường Backend:**
+    - [ ]  Cài đặt ngôn ngữ backend đã chọn (Node.js hoặc Python).
+    - [ ]  Khởi tạo project và cài đặt framework (ví dụ: **`npm init -y`** và **`npm install express`** cho Node.js).
+    - [ ]  Cài đặt thư viện để kết nối với MySQL (ví dụ: **`mysql2`** cho Node.js, **`PyMySQL`** cho Python).
+    - [ ]  Sử dụng Git để quản lý version code.
+2. **Thiết lập Cơ sở dữ liệu MySQL:**
+    - [ ]  Cài đặt MySQL Server (có thể cài local dùng XAMPP/MAMP hoặc dùng dịch vụ cloud).
+    - [ ]  Tạo một database mới cho dự án.
+    - [ ]  Thiết kế và tạo các bảng cần thiết cho tuần này:
+        - Bảng **`users`** (id, username, email, password_hash, created_at).
+        - Bảng **`lessons`** (id, title, content, difficulty_level) - có thể thêm vài dữ liệu mẫu.
+    - [ ]  Kiểm tra kết nối từ code backend đến MySQL thành công.
+3. **Xây dựng các API Endpoint đầu tiên:**
+    - [ ]  Tạo API **Đăng ký** (**`POST /api/register`**): nhận email, password, lưu vào bảng **`users`** (nhớ hash password).
+    - [ ]  Tạo API **Đăng nhập** (**`POST /api/login`**): kiểm tra email, password, trả về một token (ví dụ: JWT) nếu thành công.
+    - [ ]  Tạo API **Lấy danh sách bài học** (**`GET /api/lessons`**): trả về danh sách các bài học từ bảng **`lessons`**.
+    - [ ]  Dùng công cụ như **Postman** hoặc **Insomnia** để kiểm tra các API này có hoạt động đúng không.
