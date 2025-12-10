@@ -9,18 +9,20 @@ class AppConstants {
   static const Color primaryColor = Color(0xFF58CC02); // Duolingo green
   static const Color secondaryColor = Color(0xFFCE82FF); // Purple accent
   static const Color accentColor = Color(0xFFFFAF00); // Orange/yellow accent
-  static const Color backgroundColor = Color(0xFFF7F7F7); // Light gray background
+  static const Color backgroundColor = Color(
+    0xFFF7F7F7,
+  ); // Light gray background
   static const Color surfaceColor = Colors.white;
   static const Color errorColor = Color(0xFFEA4335); // Red
   static const Color successColor = Color(0xFF58CC02); // Same as primary
   static const Color warningColor = Color(0xFFFFAF00); // Same as accent
-  
+
   // Additional Duolingo colors
   static const Color blueColor = Color(0xFF1CB0F6); // Duolingo blue
   static const Color lightGreenColor = Color(0xFF89E219); // Light green
   static const Color darkGreenColor = Color(0xFF58A700); // Dark green
   static const Color pinkColor = Color(0xFFFF9600); // Pink/orange
-  
+
   // Text Colors
   static const Color textPrimary = Color(0xFF212121);
   static const Color textSecondary = Color(0xFF757575);
@@ -32,13 +34,13 @@ class AppConstants {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-  
+
   static const LinearGradient funGradient = LinearGradient(
     colors: [blueColor, secondaryColor],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-  
+
   static const LinearGradient warmGradient = LinearGradient(
     colors: [accentColor, pinkColor],
     begin: Alignment.topLeft,
@@ -64,10 +66,12 @@ class AppConstants {
   static const double fontSizeXXLarge = 32.0;
 
   // API Routes
-  static const String baseUrl = 'http://192.168.1.100:3000/api'; // Thay đổi IP máy của bạn
+  // Android Emulator sử dụng 10.0.2.2 để truy cập localhost của máy host
+  static const String baseUrl = 'http://10.0.2.2:3000/api';
   static const String loginEndpoint = '/login';
   static const String registerEndpoint = '/register';
   static const String lessonsEndpoint = '/lessons';
+  static const String profileEndpoint = '/profile';
 
   // Storage Keys
   static const String tokenKey = 'auth_token';

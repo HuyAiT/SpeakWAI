@@ -80,6 +80,83 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _showForgotPasswordDialog(BuildContext context) {
+    final emailController = TextEditingController();
+    bool isLoading = false;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Quên mật khẩu'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Nhập email của bạn để đặt lại mật khẩu'),
+              const SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'example@email.com',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      if (emailController.text.isEmpty) {
+                        return;
+                      }
+                      setDialogState(() => isLoading = true);
+                      try {
+                        await ApiService.forgotPassword(
+                          emailController.text.trim(),
+                        );
+                        if (dialogContext.mounted) {
+                          Navigator.pop(dialogContext);
+                          ScaffoldMessenger.of(this.context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Nếu email tồn tại, link đặt lại mật khẩu đã được gửi',
+                              ),
+                              backgroundColor: AppConstants.successColor,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        setDialogState(() => isLoading = false);
+                        ScaffoldMessenger.of(this.context).showSnackBar(
+                          SnackBar(
+                            content: Text('Lỗi: $e'),
+                            backgroundColor: AppConstants.errorColor,
+                          ),
+                        );
+                      }
+                    },
+              child: isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Gửi'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,7 +180,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(60),
                           boxShadow: [
                             BoxShadow(
-                              color: AppConstants.secondaryColor.withOpacity(0.3),
+                              color: AppConstants.secondaryColor.withOpacity(
+                                0.3,
+                              ),
                               blurRadius: 20,
                               spreadRadius: 5,
                             ),
@@ -118,23 +197,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: AppConstants.spacingLarge),
                       Text(
                         AppConstants.appName,
-                        style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                          color: AppConstants.primaryColor,
-                        ),
+                        style: Theme.of(context).textTheme.displayLarge
+                            ?.copyWith(color: AppConstants.primaryColor),
                       ),
                       const SizedBox(height: AppConstants.spacingMedium),
                       Container(
-                        padding: const EdgeInsets.all(AppConstants.spacingMedium),
+                        padding: const EdgeInsets.all(
+                          AppConstants.spacingMedium,
+                        ),
                         decoration: BoxDecoration(
                           color: AppConstants.lightGreenColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+                          borderRadius: BorderRadius.circular(
+                            AppConstants.borderRadiusLarge,
+                          ),
                         ),
                         child: Text(
                           '🎯 Học tiếng Anh vui nhộn mỗi ngày!',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: AppConstants.darkGreenColor,
-                          ),
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: AppConstants.darkGreenColor,
+                              ),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -207,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
-                              // TODO: Implement forgot password
+                              _showForgotPasswordDialog(context);
                             },
                             child: const Text('Quên mật khẩu?'),
                           ),
@@ -221,10 +304,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             gradient: AppConstants.warmGradient,
-                            borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+                            borderRadius: BorderRadius.circular(
+                              AppConstants.borderRadiusLarge,
+                            ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppConstants.accentColor.withOpacity(0.3),
+                                color: AppConstants.accentColor.withOpacity(
+                                  0.3,
+                                ),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -236,7 +323,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               backgroundColor: Colors.transparent,
                               shadowColor: Colors.transparent,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+                                borderRadius: BorderRadius.circular(
+                                  AppConstants.borderRadiusLarge,
+                                ),
                               ),
                             ),
                             child: _isLoading
@@ -248,10 +337,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                         height: 20,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 3,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
                                         ),
                                       ),
-                                      SizedBox(width: AppConstants.spacingSmall),
+                                      SizedBox(
+                                        width: AppConstants.spacingSmall,
+                                      ),
                                       Text('Đang đăng nhập...'),
                                     ],
                                   )
@@ -259,7 +353,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       const Text('🚀'),
-                                      const SizedBox(width: AppConstants.spacingSmall),
+                                      const SizedBox(
+                                        width: AppConstants.spacingSmall,
+                                      ),
                                       Text(
                                         'Đăng nhập',
                                         style: GoogleFonts.nunito(

@@ -1,0 +1,142 @@
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.pyc
+
+# ============================================
+# Virtual environments
+# ============================================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ============================================
+# IDE & Editor
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# ============================================
+# OS
+# ============================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============================================
+# Node.js
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ============================================
+# Environment variables
+# ============================================
+.env
+.env.local
+.env.*.local
+
+# ============================================
+# Model files (LARGE FILES - DO NOT COMMIT)
+# ============================================
+*.h5
+*.pkl
+*.pth
+*.pt
+*.ckpt
+*.weights
+*.pb
+*.tflite
+
+# ============================================
+# Data files (Training data, datasets)
+# ============================================
+# Ignore all CSV and large data files
+ai_model/*.csv
+ai_model/data/**/*.csv
+backend/data/**/*.csv
+
+# Ignore large JSON data files (but keep config files)
+ai_model/*.json
+ai_model/data/**/*.json
+backend/data/**/*.json
+
+# Keep these important JSON files
+!package.json
+!package-lock.json
+!pubspec.lock
+!tsconfig.json
+!jsconfig.json
+
+# ============================================
+# Logs
+# ============================================
+*.log
+logs/
+*.log.*
+
+# ============================================
+# Temporary & Personal files
+# ============================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+ToDoList.txt
+notes.txt
+
+# ============================================
+# Database
+# ============================================
+*.sql.backup
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================================
+# Build & Distribution
+# ============================================
+dist/
+dist-ssr/
+*.local
+
+# ============================================
+# Test coverage
+# ============================================
+coverage/
+.nyc_output/
+*.coverage
+.coverage.*
