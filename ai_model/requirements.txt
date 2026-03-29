@@ -1,0 +1,22 @@
+# SpeakWAI AI Server Requirements
+# Install: pip install -r requirements.txt
+
+# Core
+torch>=2.0.0
+transformers>=4.30.0
+numpy>=1.24.0
+
+# Audio processing
+librosa>=0.10.0
+soundfile>=0.12.0
+
+# Server
+fastapi>=0.100.0
+uvicorn>=0.22.0
+python-multipart>=0.0.6
+
+# HTTP
+aiofiles>=23.0.0
+
+# Optional: for CUDA
+# pip install torch --index-url https://download.pytorch.org/whl/cu118

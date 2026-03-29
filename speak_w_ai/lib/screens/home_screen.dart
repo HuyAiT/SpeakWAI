@@ -17,20 +17,16 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   List<dynamic> _lessons = [];
   bool _isLoading = false;
-
-  final List<Widget> _screens = [
-    const _HomeTab(),
-    _LessonsTab(),
-    const _ProfileTab(),
-  ];
+  Map<String, dynamic>? _userProfile;
+  Map<String, dynamic>? _userStats;
 
   @override
   void initState() {
     super.initState();
-    _loadLessons();
+    _loadData();
   }
 
-  Future<void> _loadLessons() async {
+  Future<void> _loadData() async {
     setState(() {
       _isLoading = true;
     });
@@ -38,26 +34,58 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final token = await AuthService.getToken();
       if (token != null) {
-        final response = await ApiService.getLessons(token);
-        if (response['lessons'] != null) {
-          setState(() {
-            _lessons = response['lessons'];
-            _isLoading = false;
-          });
+        // Load lessons
+        final lessonsResponse = await ApiService.getLessons(token);
+        if (lessonsResponse['lessons'] != null) {
+          _lessons = lessonsResponse['lessons'];
+        }
+
+        // Load profile
+        try {
+          final profileResponse = await ApiService.getProfile(token);
+          if (profileResponse['user'] != null) {
+            _userProfile = profileResponse['user'];
+          }
+        } catch (e) {
+          debugPrint('Error loading profile: $e');
+        }
+
+        // Load stats
+        try {
+          final statsResponse = await ApiService.getUserStats(token);
+          if (statsResponse['stats'] != null) {
+            _userStats = statsResponse['stats'];
+          }
+        } catch (e) {
+          debugPrint('Error loading stats: $e');
         }
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      debugPrint('Error loading lessons: $e');
+      debugPrint('Error loading data: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          _HomeTab(
+            lessons: _lessons,
+            userStats: _userStats,
+            isLoading: _isLoading,
+          ),
+          _LessonsTab(lessons: _lessons, isLoading: _isLoading),
+          _ProfileTab(userProfile: _userProfile, onLogout: _handleLogout),
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -108,13 +136,31 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  Future<void> _handleLogout() async {
+    await AuthService.logout();
+    if (mounted) {
+      context.go('/login');
+    }
+  }
 }
 
 class _HomeTab extends StatelessWidget {
-  const _HomeTab();
+  final List<dynamic> lessons;
+  final Map<String, dynamic>? userStats;
+  final bool isLoading;
+
+  const _HomeTab({
+    required this.lessons,
+    this.userStats,
+    required this.isLoading,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final practiceDays = userStats?['practice_days'] ?? 0;
+    final lessonsCompleted = userStats?['lessons_completed'] ?? 0;
+
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.symmetric(
@@ -127,7 +173,9 @@ class _HomeTab extends StatelessWidget {
             padding: const EdgeInsets.all(AppConstants.spacingSmall),
             decoration: BoxDecoration(
               gradient: AppConstants.funGradient,
-              borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+              borderRadius: BorderRadius.circular(
+                AppConstants.borderRadiusMedium,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: AppConstants.secondaryColor.withOpacity(0.15),
@@ -188,21 +236,22 @@ class _HomeTab extends StatelessWidget {
 
           const SizedBox(height: AppConstants.spacingMedium),
 
-          const Row(
+          // Stats cards with real data
+          Row(
             children: [
               Expanded(
                 child: _StatCard(
                   title: 'Ngày học',
-                  value: '7',
+                  value: practiceDays.toString(),
                   icon: Icons.calendar_today,
                   color: AppConstants.primaryColor,
                 ),
               ),
-              SizedBox(width: AppConstants.spacingSmall),
+              const SizedBox(width: AppConstants.spacingSmall),
               Expanded(
                 child: _StatCard(
                   title: 'Bài hoàn thành',
-                  value: '12',
+                  value: lessonsCompleted.toString(),
                   icon: Icons.check_circle,
                   color: AppConstants.successColor,
                 ),
@@ -215,8 +264,8 @@ class _HomeTab extends StatelessWidget {
           Text(
             'Chức năng chính',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontSize: AppConstants.fontSizeLarge,
-                ),
+              fontSize: AppConstants.fontSizeLarge,
+            ),
           ),
 
           const SizedBox(height: AppConstants.spacingLarge),
@@ -240,7 +289,7 @@ class _HomeTab extends StatelessWidget {
             icon: Icons.book,
             color: AppConstants.accentColor,
             onTap: () {
-              // TODO: Navigate
+              context.push('/home/vocabulary');
             },
           ),
 
@@ -252,10 +301,10 @@ class _HomeTab extends StatelessWidget {
             icon: Icons.headphones,
             color: AppConstants.primaryColor,
             onTap: () {
-              // TODO: Navigate
+              context.push('/home/listening');
             },
           ),
-          
+
           const SizedBox(height: AppConstants.spacingMedium),
         ],
       ),
@@ -264,40 +313,32 @@ class _HomeTab extends StatelessWidget {
 }
 
 class _LessonsTab extends StatelessWidget {
-  const _LessonsTab();
+  final List<dynamic> lessons;
+  final bool isLoading;
+
+  const _LessonsTab({required this.lessons, required this.isLoading});
 
   @override
   Widget build(BuildContext context) {
-    final parentState = context.findAncestorStateOfType<_HomeScreenState>();
-    final lessons = parentState?._lessons ?? [];
-    final isLoading = parentState?._isLoading ?? false;
-
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(AppConstants.spacingLarge),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Bài học',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            
+            Text('Bài học', style: Theme.of(context).textTheme.headlineMedium),
+
             const SizedBox(height: AppConstants.spacingLarge),
-            
+
             // Loading indicator
             if (isLoading) ...[
-              const Center(
-                child: CircularProgressIndicator(),
-              ),
+              const Center(child: CircularProgressIndicator()),
               const SizedBox(height: AppConstants.spacingMedium),
             ] else ...[
               // Lesson List
               Expanded(
                 child: lessons.isEmpty
-                    ? const Center(
-                        child: Text('Chưa có bài học nào'),
-                      )
+                    ? const Center(child: Text('Chưa có bài học nào'))
                     : ListView.builder(
                         itemCount: lessons.length,
                         itemBuilder: (context, index) {
@@ -305,7 +346,9 @@ class _LessonsTab extends StatelessWidget {
                           return Card(
                             child: ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: _getDifficultyColor(lesson['difficulty_level']),
+                                backgroundColor: _getDifficultyColor(
+                                  lesson['difficulty_level'],
+                                ),
                                 child: Text(
                                   '${index + 1}',
                                   style: const TextStyle(
@@ -321,13 +364,13 @@ class _LessonsTab extends StatelessWidget {
                               ),
                               trailing: const Icon(Icons.arrow_forward_ios),
                               onTap: () {
-                                // TODO: Navigate to lesson detail
+                                context.push('/home/lesson/${lesson['id']}');
                               },
                             ),
                           );
                         },
                       ),
-                  ),
+              ),
             ],
           ],
         ),
@@ -363,23 +406,35 @@ class _LessonsTab extends StatelessWidget {
 }
 
 class _ProfileTab extends StatelessWidget {
-  const _ProfileTab();
+  final Map<String, dynamic>? userProfile;
+  final VoidCallback onLogout;
+
+  const _ProfileTab({this.userProfile, required this.onLogout});
 
   @override
   Widget build(BuildContext context) {
+    final username = userProfile?['username'] ?? 'Người dùng';
+    final email = userProfile?['email'] ?? '';
+    final createdAt = userProfile?['created_at'];
+
+    String joinDate = '';
+    if (createdAt != null) {
+      try {
+        final date = DateTime.parse(createdAt);
+        joinDate = 'Tham gia: ${date.day}/${date.month}/${date.year}';
+      } catch (_) {}
+    }
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(AppConstants.spacingLarge),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Hồ sơ',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            
+            Text('Hồ sơ', style: Theme.of(context).textTheme.headlineMedium),
+
             const SizedBox(height: AppConstants.spacingLarge),
-            
+
             // Profile Information
             Card(
               child: Padding(
@@ -395,29 +450,61 @@ class _ProfileTab extends StatelessWidget {
                         color: AppConstants.textOnPrimary,
                       ),
                     ),
-                    
+
                     const SizedBox(height: AppConstants.spacingMedium),
-                    
+
                     Text(
-                      'Người dùng',
+                      username,
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                    
+
                     const SizedBox(height: AppConstants.spacingSmall),
-                    
+
                     Text(
-                      'user@example.com',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      email,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppConstants.textSecondary,
+                      ),
                     ),
-                    
+
+                    if (joinDate.isNotEmpty) ...[
+                      const SizedBox(height: AppConstants.spacingSmall),
+                      Text(
+                        joinDate,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppConstants.textSecondary,
+                        ),
+                      ),
+                    ],
+
                     const SizedBox(height: AppConstants.spacingLarge),
-                    
+
                     CustomButton(
                       text: 'Đăng xuất',
                       isOutlined: true,
                       onPressed: () {
-                        // TODO: Implement logout
-                        context.go('/login');
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Đăng xuất'),
+                            content: const Text(
+                              'Bạn có chắc chắn muốn đăng xuất?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Hủy'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  onLogout();
+                                },
+                                child: const Text('Đăng xuất'),
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -451,11 +538,7 @@ class _StatCard extends StatelessWidget {
         padding: const EdgeInsets.all(AppConstants.spacingSmall),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: 24,
-            ),
+            Icon(icon, color: color, size: 24),
             const SizedBox(height: 2),
             Text(
               value,
@@ -465,10 +548,7 @@ class _StatCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 2),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text(title, style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
       ),
@@ -506,17 +586,15 @@ class _FeatureCard extends StatelessWidget {
                 height: 45,
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    AppConstants.borderRadiusMedium,
+                  ),
                 ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 24,
-                ),
+                child: Icon(icon, color: color, size: 24),
               ),
-              
+
               const SizedBox(width: AppConstants.spacingSmall),
-              
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -542,7 +620,7 @@ class _FeatureCard extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               const Icon(
                 Icons.arrow_forward_ios,
                 color: AppConstants.textSecondary,
